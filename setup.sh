@@ -132,8 +132,11 @@ ok "$T3_HOME/.profile (shims) and $T3_HOME/.bashrc (mise activate) up to date"
 # ---------------------------------------------------------------- mise
 step "mise"
 if as_user 'test -x ~/.local/bin/mise'; then
-  as_user 'mise self-update -y' || warn "mise self-update failed, keeping the current version"
-  ok "updated"
+  if as_user 'mise self-update -y'; then
+    ok "up to date"
+  else
+    warn "mise self-update failed, keeping the installed version"
+  fi
 else
   as_user 'curl -fsSL https://mise.run | sh'
   ok "installed"
@@ -190,12 +193,13 @@ ok "tools installed"
 # ---------------------------------------------------------------- T3 Code
 step "T3 Code"
 if as_user 'test -x ~/.local/bin/t3'; then
-  if [[ "$HAS_SYSTEMD" == 1 ]]; then
-    as_user 't3 update --yes'
+  # A failed release check (network, GitHub API rate limit) must not stop the
+  # rest of the setup: keep the installed version and carry on.
+  if as_user 't3 update --yes'; then
+    ok "up to date"
   else
-    as_user 't3 update --yes' || warn "t3 update could not finish without systemd"
+    warn "t3 update failed, keeping the installed version (run the script again later)"
   fi
-  ok "updated"
 else
   as_user 'curl -fsSL https://t3.codes/install.sh | sh'
   ok "installed"
