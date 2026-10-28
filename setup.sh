@@ -51,16 +51,16 @@ fi
 # ---------------------------------------------------------------- apt base
 step "System packages (apt)"
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq
+apt-get update -qq </dev/null
 if [[ "$APT_UPGRADE" == 1 ]]; then
   info "APT_UPGRADE=1: upgrading installed packages"
-  apt-get -y -qq -o Dpkg::Options::=--force-confold upgrade
+  apt-get -y -qq -o Dpkg::Options::=--force-confold upgrade </dev/null
 fi
 base_pkgs=(ca-certificates curl git tar gzip xz-utils zstd unzip procps)
 if [[ "$HAS_SYSTEMD" == 1 ]]; then
   base_pkgs+=(dbus-user-session)
 fi
-apt-get install -y -qq --no-install-recommends "${base_pkgs[@]}" >/dev/null
+apt-get install -y -qq --no-install-recommends "${base_pkgs[@]}" </dev/null >/dev/null
 ok "base packages: ${base_pkgs[*]}"
 
 # ---------------------------------------------------------------- user
@@ -98,7 +98,7 @@ as_user() {
     envs+=("XDG_RUNTIME_DIR=$RUNTIME_DIR" "DBUS_SESSION_BUS_ADDRESS=unix:path=$RUNTIME_DIR/bus")
   fi
   [[ -n "${T3CODE_CHANNEL:-}" ]] && envs+=("T3CODE_CHANNEL=$T3CODE_CHANNEL")
-  (cd "$T3_HOME" && runuser -u "$T3_USER" -- env -i "${envs[@]}" bash -lc "$1")
+  (cd "$T3_HOME" && runuser -u "$T3_USER" -- env -i "${envs[@]}" bash -lc "$1" </dev/null)
 }
 
 # Replace (or append) the t3machine block in a file owned by the T3 user.
@@ -172,7 +172,7 @@ step "mise bootstrap packages"
 # pointed at the user's config directory.
 BOOTSTRAP_STATE="$T3_HOME/.local/state/t3machine/bootstrapped"
 as_root_mise() {
-  (cd / && env MISE_CONFIG_DIR="$T3_HOME/.config/mise" "$T3_HOME/.local/bin/mise" "$@")
+  (cd / && env MISE_CONFIG_DIR="$T3_HOME/.config/mise" "$T3_HOME/.local/bin/mise" "$@" </dev/null)
 }
 as_root_mise bootstrap packages apply --update --yes
 if [[ -f "$BOOTSTRAP_STATE" ]]; then
