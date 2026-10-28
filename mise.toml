@@ -1,0 +1,28 @@
+# t3machine: global mise config for the T3 Code user.
+#
+# setup.sh installs this file as ~/.config/mise/conf.d/t3machine.toml and
+# overwrites it on every run. Put machine-specific additions in
+# ~/.config/mise/config.toml instead (for example with `mise use -g ...`).
+
+[tools]
+node = "26"
+gh = "latest"
+
+# Machine-wide system packages, applied by `mise bootstrap packages`.
+# setup.sh runs `apply` (install missing) and, on update runs, `upgrade`.
+# Docs: https://mise.jdx.dev/bootstrap/packages/
+[bootstrap.packages]
+"apt:build-essential" = "latest"
+"apt:pkg-config" = "latest"
+"apt:libssl-dev" = "latest"
+"apt:zlib1g-dev" = "latest"
+"apt:libffi-dev" = "latest"
+"apt:libyaml-dev" = "latest"
+"apt:ripgrep" = "latest"
+"apt:fd-find" = "latest"
+"apt:jq" = "latest"
+"apt:tmux" = "latest"
+"apt:htop" = "latest"
+
+[settings]
+system_packages.managers = ["apt"]
